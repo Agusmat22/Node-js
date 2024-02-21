@@ -1,0 +1,215 @@
+-Que es node Js ?
+
+
+Node.js es un entorno de programacion en tiempo de ejecución de JavaScript de código abierto y multiplataforma 
+que se utiliza para ejecutar código JavaScript del lado del servidor. 
+Es importante tener en cuenta que Node.js no es un lenguaje de programación en sí mismo, 
+sino más bien un entorno que permite ejecutar código JavaScript fuera del navegador, 
+en el lado del servidor.
+
+Node.js se destaca por su modelo de E/S (entrada/salida) no bloqueante. Esto significa que las operaciones de E/S, 
+como leer un archivo, hacer una solicitud de red o consultar una base de datos, se realizan de manera asíncrona. 
+En lugar de esperar a que una operación de E/S se complete antes de continuar con el siguiente código, 
+Node.js seguirá ejecutando otras tareas mientras espera que la operación de E/S se complete. 
+Esto permite que Node.js maneje múltiples solicitudes de manera eficiente sin bloquear el hilo de ejecución principal.
+
+----------------------------------------------------------------------------------------------------------------
+
+- Que es Blocking vs Non Blocking ?
+
+
+Blocking: es cuando trabajamos con tareas sincronas, estas se ejecutan en el hilo principal pero demoran mas tiempo en ejecutarse.
+
+Non Blocking: es cuando trabajmos con tareas asincronas, se ejecutan en un hilo secundario y demoran mucho menos, ya que node
+tiene la capacidad de realizar tareas en simultaneo sin necesidad de esperar que finalize otras tareas.
+
+----------------------------------------------------------------------------------------------------------------
+
+- Requerir paquetes que es?
+
+ es una función integrada que se utiliza para cargar módulos o archivos en tu aplicación.
+
+Cuando creas una aplicación en Node.js, es probable que necesites usar funcionalidades proporcionadas por otros archivos JavaScript
+ o módulos externos. Para hacer esto, utilizas require() para cargar esos archivos o módulos en tu código.
+
+
+Todos los paquetes de NODE se encuentran en su documentacion: https://nodejs.org/docs
+
+----------------------------------------------------------------------------------------------------------------
+
+- Crear archivos en nuestro system:
+
+crear archivo
+
+1) Primero requerimos de un paquete (libreria) de NODE -->   const fileSystem = require('fs');
+
+2) Segundo usamos la funcion 'writeFile' del paquete de fileSystem.
+
+Primer parametro sera el nombre del archivo con su tipo, el segundo parametro sera la data, y el tercer parametro
+es un callback que validara que no ocurra un error al ejecutarse y de ser asi lanzara una excepcion con el mensaje de error
+
+
+fileSystem.writeFile('tabla-5.txt',salida, (err)=>{
+    if (err) throw err;
+
+    console.log('tabla-5.txt creado')
+})
+
+
+3) Hay otra opcion de guardar un archivo con otro metodo, solo le pasamos el nombre y la data, a diferencia del otro es que
+debemos controlar el error dentro un try pero no debemos pasarle por parametro un callback
+
+
+try{
+	fileSystem.writeLineSync( 'tabla-5.txt',salida )
+}
+catch
+{
+
+	//controlo la excepcion
+}
+
+----------------------------------------------------------------------------------------------------------------
+
+- Como exportar modulos ( variables, funciones en NODE js)
+en tipo de objeto
+
+1)
+module.exports = {
+    crearArchivo: crearArchivo
+}
+
+2) Obtener el modulo: 
+
+const {crearArchivo} = require('./helpers/multiplicar')
+
+----------------------------------------------------------------------------------------------------------------
+
+- Recibir informacion desde linea de comando (parametros):
+
+No se usa de esta manera pero podemos leer los parametros ingresados por linea de comando al ejecutar el modulo,
+
+process.argv;  --> En la primera posicion muestra el directorio donde esta instalador nuestra app node global,
+ el segundo el directorio es donde se encuentra nuestra aplicacion de js y el tercero vienen los parametros que le pasemos.
+
+--> Podemos visualizar antes de desestructurar en [] console.log(process.argv)
+
+LO MAS OPTIMO ES USAR LA LIBRERIA YARGS
+
+----------------------------------------------------------------------------------------------------------------
+
+
+-Crear archivos package.json:
+
+Nos sirve para instalar dependencias de NPM
+
+
+1) Creamos nuestro package.json --> npm init
+
+
+----------------------------------------------------------------------------------------------------------------
+
+- Yargs
+
+Es una libreria que nos permite administrar de manera mas eficiciente los parametros al momento de correr un
+archivo node en consola ejemplo  node app.js --base=5  
+
+Separa el nombre del valor y nos devuelve un objeto literal.
+
+  const argv = require('yargs).argv;                --> esta const tendra el valor
+
+  console.log(argv) --> dentro estara la clave con el nombre que le pasamos por parametro y el value con su valor
+
+----------------------------------------------------------------------------------------------------------------
+
+- Configuracion de yarns
+
+Este archivo debe estar creado dentro de un directorio llamado --> config y el archivo con el nombre yargs.js
+
+
+Ejemplo:
+
+.options => nos permite configurar los parametros que esperamos recibir y dentro de el le debemos pasar la letra
+de como se identificara y luego
+
+alias = nombre del archivo
+demandOption = si es un archivo obligatorio o no
+default = le pasamos un valor por defecto al parametro
+type = el tipo de dato que esperamos
+
+
+.check => nos permite validar el parametro recibido y decidir si lanzamos una excepcion o continuamos con la ejecucion.
+espera por parametro un callback con dos argumentos (argv, options)
+
+
+
+.argv => por ultimo nos permite tener el objeto literal con los datos de los parametros
+
+
+
+
+
+const argv = require('yargs')
+                    .options({
+                        'b':{
+                            alias: 'base',
+                            demandOption: true,
+                            type: 'number',
+			    describe: 'Es la base de la tabla de multiplicar'
+                        },
+                        'l':{
+                            alias: 'listar',
+                            demandOption: true,
+                            type: 'boolean',
+                            default: false,
+			    describe: 'Lista la tabla de multiplicar'
+                        }
+
+                    })
+                    .check( (argv, options)=>{
+                        
+                        if (isNaN( argv.b )) {
+                            throw new Error("Debe ingresar un numero como base");
+                        }
+
+                        return true;
+
+                    })
+                    .argv;
+
+
+
+EJEMPLO de ejuctar una app con node y pasandole parametro --> node app.js -b=10 -h=20  -l
+
+----------------------------------------------------------------------------------------------------------------
+
+COLORES EN CONSOLA
+
+npm i colors
+
+1) importamos el modulo --> const colors = require('colors');
+
+
+2) En cada string le hacemos 
+
+. y el color que deseamos ejemplo -->  'hola'.green
+
+
+si no es un texto y es una variable podemos hacer colors.blue( miVariableQueContieneUnString );
+
+
+!importante al momento de guardar un archivo .json o txt que contiene colors debemos quitarselo o guardar una copia con el
+mismo valor pero sin los colores
+
+----------------------------------------------------------------------------------------------------------------
+
+Importar a GITHUB
+
+Los modulos de node NUNCA se les hacen un backup en la nube --> node_modules
+
+1)creamos un archivo .gitignore
+
+2)ahi dentro colocamos el path de los directorios que deseo evitar hacer el backup
+
+3) para reinstalar todas las dependencias de node debemos solamente hacer npm installar y automaticamente vuelve
+todo como estaba antes
